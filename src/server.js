@@ -12,6 +12,7 @@ const port = process.env.API_PORT || 3000;
 const http = createServer(server.callback());
 const io = Io.listen(server.listen(port));
 const routes = Routes(router, io);
+global.api_url = process.env['API_URL'] || '';
 io.on('connection', socket => {
   /* console.log('new client connected, num :');*/
 });

@@ -1,4 +1,5 @@
 import v4 from 'uuid/v4';
+import fetch from 'node-fetch';
 /**
  * @param {import('koa-router')} server
  * @param {import('socket.io').Server} io
@@ -6,10 +7,16 @@ import v4 from 'uuid/v4';
 function routes(server, io) {
   server
     .post('/conversation', async context => {
-      context.body = {
-        id: v4()
-      };
-      return context;
+      return fetch(`${global.api_url}/conversation`, {
+        method: 'POST',
+        body: JSON.stringify({}),
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(response => response.text())
+        .then(body => {
+          context.body = { id: body };
+          return context;
+        });
     })
     .post('/conversation/:id/callback', async context => {
       const id = context.params.id;
