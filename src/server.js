@@ -4,11 +4,17 @@ import Routes from './routes';
 import bodyParser from 'koa-bodyparser';
 import logger from 'koa-logger';
 import cors from '@koa/cors';
+import { createServer } from 'http';
+import Io from 'socket.io';
 const server = new Koa();
 const router = new Router();
 const port = process.env.API_PORT || 3000;
-const routes = Routes(router);
-
+const http = createServer(server.callback());
+const io = Io.listen(server.listen(port));
+const routes = Routes(router, io);
+io.on('connection', socket => {
+  /* console.log('new client connected, num :');*/
+});
 server
   .use(cors())
   .use(logger())
@@ -16,5 +22,4 @@ server
   .use(router.routes())
   .use(router.allowedMethods());
 
-server.listen(port);
 console.log(`API started, listening on port : ${port}`);

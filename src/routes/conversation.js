@@ -1,8 +1,9 @@
 import v4 from 'uuid/v4';
 /**
  * @param {import('koa-router')} server
+ * @param {import('socket.io').Server} io
  */
-function routes(server) {
+function routes(server, io) {
   server
     .post('/conversation', async context => {
       context.body = {
@@ -10,10 +11,11 @@ function routes(server) {
       };
       return context;
     })
-    .get('/conversation/:id/callback', async context => {
-      context.body = {
-        ok: true
-      };
+    .post('/conversation/:id/callback', async context => {
+      const id = context.params.id;
+      const payload = context.request.body;
+      context.body = payload;
+      io.emit(`response_${id}`, context.body);
       return context;
     });
 }
