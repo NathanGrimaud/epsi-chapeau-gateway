@@ -25,17 +25,31 @@ function routes(server) {
     return googleClient
       .faceDetection(request)
       .then(images => {
-        const annotations = pick(keys, images[0].faceAnnotations[0]);
-        console.log(annotations);
+        const image = images[0];
+        if (image.faceAnnotations.length < 0) {
+          throw 'no mood found :(';
+        }
+        const keys = [
+          'joyLikelihood',
+          'sorrowLikelihood',
+          'angerLikelihood',
+          'surpriseLikelihood',
+          'underExposedLikelihood',
+          'blurredLikelihood',
+          'headwearLikelihood'
+        ];
+        const annotations = pick(keys, image.faceAnnotations[0]);
         context.body = {
           annotations
         };
+        return context;
       })
       .catch(error => {
         context.body = {
           message: 'Cannot get image recognition working :(',
           error: error
         };
+        return context;
       });
   });
 }
